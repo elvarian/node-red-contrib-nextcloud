@@ -68,7 +68,7 @@ module.exports = function (RED) {
             if (!calName || !calName.length || (calName && calName.length && calName === calendar.displayName)) {
               dav.listCalendarObjects(calendar, { xhr: xhr, filters: filters })
                 .then(function (calendarEntries) {
-                  let msg = { 'payload': { 'name': calendar.displayName, 'data': [] } }
+                  msg.payload = { 'name': calendar.displayName, 'data': [] }
                   calendarEntries.forEach(function (calendarEntry) {
                     try {
                       const ics = calendarEntry.calendarData
@@ -79,6 +79,7 @@ module.exports = function (RED) {
                       node.error('Error parsing calendar data: ' + error)
                     }
                   })
+
                   node.send(msg)
                 }, function () {
                   node.error('Nextcloud:CalDAV -> get ics went wrong.')
@@ -169,7 +170,8 @@ module.exports = function (RED) {
                     }
                     vcfList.payload.data.push(vcfJson)
                   })
-                  node.send(vcfList)
+                  msg.payload = vcfList.payload;
+                  node.send(msg)
                 }, function () {
                   node.error('Nextcloud:CardDAV -> get cards went wrong.')
                 })
@@ -206,7 +208,8 @@ module.exports = function (RED) {
       }
       client.getDirectoryContents(directory, option)
         .then(function (contents) {
-          node.send({ 'payload': contents })
+          msg.payload = contents
+          node.send(msg)
         }, function (error) {
           node.error('Nextcloud:WebDAV -> get directory content went wrong.' + JSON.stringify(error))
         })
@@ -241,7 +244,8 @@ module.exports = function (RED) {
       }
       client.getFileContents(filename, option)
         .then(function (contents) {
-          node.send({ 'payload': contents })
+          msg.payload = contents
+          node.send(msg)
         }, function (error) {
           node.error('Nextcloud:WebDAV -> get file went wrong.' + JSON.stringify(error))
         })
@@ -285,7 +289,8 @@ module.exports = function (RED) {
       client.putFileContents(directory + name, file, { format: 'binary' }, option)
         .then(function (contents) {
           console.log(contents)
-          node.send({ 'payload': JSON.parse(contents) })
+          msg.payload = JSON.parse(contents)
+          node.send(msg)
         }, function () {
           node.error('Nextcloud:WebDAV -> send file went wrong.')
         })
