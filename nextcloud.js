@@ -192,7 +192,7 @@ module.exports = function (RED) {
 
     node.on('input', (msg) => {
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = createClient(webDavUri, {
+      const client = webdav.createClient(webDavUri, {
         username: node.server.credentials.user, 
         password: node.server.credentials.pass,
         httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
@@ -229,7 +229,7 @@ module.exports = function (RED) {
 
     node.on('input', (msg) => {
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = createClient(webDavUri, {
+      const client = webdav.createClient(webDavUri, {
         username: node.server.credentials.user, 
         password: node.server.credentials.pass,
         httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
@@ -286,7 +286,7 @@ module.exports = function (RED) {
       directory = directory.replace('//', '/')
 
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = createClient(webDavUri, {
+      const client = webdav.createClient(webDavUri, {
         username: node.server.credentials.user, 
         password: node.server.credentials.pass,
         httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
