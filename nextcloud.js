@@ -192,7 +192,11 @@ module.exports = function (RED) {
 
     node.on('input', (msg) => {
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = webdav(webDavUri, node.server.credentials.user, node.server.credentials.pass)
+      const client = createClient(webDavUri, {
+        username: node.server.credentials.user, 
+        password: node.server.credentials.pass,
+        httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
+      });
       let directory = ''
       if (msg.directory) {
         directory = '/' + msg.directory
@@ -202,11 +206,11 @@ module.exports = function (RED) {
       directory = directory.replace('//', '/')
 
       // check option for self signed certs
-      const option = {}
+      /*const option = {}
       if (node.server.insecure) {
         option.agent = new https.Agent({ rejectUnauthorized: false })
-      }
-      client.getDirectoryContents(directory, option)
+      }*/
+      client.getDirectoryContents(directory)
         .then(function (contents) {
           msg.payload = contents
           node.send(msg)
@@ -225,7 +229,11 @@ module.exports = function (RED) {
 
     node.on('input', (msg) => {
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = webdav(webDavUri, node.server.credentials.user, node.server.credentials.pass)
+      const client = createClient(webDavUri, {
+        username: node.server.credentials.user, 
+        password: node.server.credentials.pass,
+        httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
+      });
       let filename = ''
       if (msg.filename) {
         filename = '/' + msg.filename
@@ -238,11 +246,11 @@ module.exports = function (RED) {
       filename = filename.replace('//', '/')
 
       // check option for self signed certs
-      const option = {}
+      /*const option = {}
       if (node.server.insecure) {
         option.agent = new https.Agent({ rejectUnauthorized: false })
-      }
-      client.getFileContents(filename, option)
+      }*/
+      client.getFileContents(filename)
         .then(function (contents) {
           msg.payload = contents
           node.send(msg)
@@ -278,15 +286,18 @@ module.exports = function (RED) {
       directory = directory.replace('//', '/')
 
       const webDavUri = node.server.address + '/remote.php/webdav/'
-      const client = webdav(webDavUri, node.server.credentials.user, node.server.credentials.pass)
-
+      const client = createClient(webDavUri, {
+        username: node.server.credentials.user, 
+        password: node.server.credentials.pass,
+        httpsAgent: node.server.insecure ? new https.Agent({ rejectUnauthorized: false }): undefined
+      });
       // check option for self signed certs
-      const option = {}
+      /*const option = {}
       if (node.server.insecure) {
         option.agent = new https.Agent({ rejectUnauthorized: false })
-      }
+      }*/
 
-      client.putFileContents(directory + name, file, { format: 'binary' }, option)
+      client.putFileContents(directory + name, file, { format: 'binary' })
         .then(function (contents) {
           console.log(contents)
           msg.payload = JSON.parse(contents)
